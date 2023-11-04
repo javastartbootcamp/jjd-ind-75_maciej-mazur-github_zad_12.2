@@ -31,15 +31,18 @@ public class StatisticsController {
     }
 
     private String generateStatistics() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Średnia wypłata: " + formatDouble(staff.getTotalSalary() / staff.getTotalNumberOfEmployees()) + "\n");
-        sb.append("Minimalna wypłata: " + formatDouble(staff.getMinSalary()) + "\n");
-        sb.append("Maksymalna wypłata: " + formatDouble(staff.getMaxSalary()) + "\n");
-        sb.append("Liczba pracowników IT: " + formatDouble(staff.getNumberOfItEmployees()) + "\n");
-        sb.append("Liczba pracowników Support: " + formatDouble(staff.getNumberOfSupportEmployees()) + "\n");
-        sb.append("Liczba pracowników Management: " + formatDouble(staff.getNumberOfManagementEmployees()) + "\n");
-
-        return sb.toString();
+        return String.format("Średnia wypłata: %s%n" +
+                "Minimalna wypłata: %s%n" +
+                "Maksymalna wypłata: %s%n" +
+                "Liczba pracowników IT: %d%n" +
+                "Liczba pracowników Support: %d%n" +
+                "Liczba pracowników Management: %d%n",
+                formatDouble(staff.getTotalSalary() / staff.getTotalNumberOfEmployees()),
+                formatDouble(staff.getMinSalary()),
+                formatDouble(staff.getMaxSalary()),
+                staff.getNumberOfItEmployees(),
+                staff.getNumberOfSupportEmployees(),
+                staff.getNumberOfManagementEmployees());
     }
 
     private String formatDouble(double number) {
