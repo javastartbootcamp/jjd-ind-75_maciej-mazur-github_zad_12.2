@@ -3,6 +3,7 @@ package app;
 import exception.NoSuchDepartmentException;
 import io.ConsolePrinter;
 import io.file.FileManager;
+import model.Department;
 import model.Staff;
 
 import java.io.FileNotFoundException;
@@ -10,15 +11,14 @@ import java.io.IOException;
 import java.util.Locale;
 
 public class StatisticsController {
-    private Staff staff;
-    private final FileManager fileManager = new FileManager();
-    private final ConsolePrinter printer = new ConsolePrinter();
-
     public void run() {
+        FileManager fileManager = new FileManager();
+        ConsolePrinter printer = new ConsolePrinter();
+
         try {
-            staff = fileManager.importData();
+            Staff staff = fileManager.importData();
             printer.printLine("Udało się zaimportować dane pracowników z pliku.");
-            String statistics = generateStatistics();
+            String statistics = generateStatistics(staff);
             fileManager.exportData(statistics);
             printer.printLine("Prawidłowo wyeksportowano statystyki firmy do pliku.");
         } catch (FileNotFoundException | NoSuchDepartmentException e) {
@@ -30,7 +30,11 @@ public class StatisticsController {
         }
     }
 
-    private String generateStatistics() {
+    private String generateStatistics(Staff staff) {
+        if (staff.getTotalNumberOfEmployees() == 0) {
+            return "Wczytany plik wejściowy nie zawierał żadnych rekordów z danymi pracowników.";
+        }
+
         return String.format("Średnia wypłata: %s%n" +
                 "Minimalna wypłata: %s%n" +
                 "Maksymalna wypłata: %s%n" +
@@ -40,9 +44,9 @@ public class StatisticsController {
                 formatDouble(staff.getTotalSalary() / staff.getTotalNumberOfEmployees()),
                 formatDouble(staff.getMinSalary()),
                 formatDouble(staff.getMaxSalary()),
-                staff.getNumberOfItEmployees(),
-                staff.getNumberOfSupportEmployees(),
-                staff.getNumberOfManagementEmployees());
+                staff.getNumberOfEmployeesByDepartment(Department.IT),
+                staff.getNumberOfEmployeesByDepartment(Department.SUPPORT),
+                staff.getNumberOfEmployeesByDepartment(Department.MANAGEMENT));
     }
 
     private String formatDouble(double number) {

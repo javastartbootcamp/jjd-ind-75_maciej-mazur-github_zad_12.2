@@ -12,8 +12,7 @@ public class FileManager {
 
     public Staff importData() throws FileNotFoundException {
         try (Scanner scanner = new Scanner(new File(INPUT_FILE_NAME))) {
-            int lineNumbers = countCsvLines();
-            Staff staff = new Staff(lineNumbers);
+            Staff staff = new Staff();
 
             while (scanner.hasNextLine()) {
                 Employee employee = createEmployeeFromString(scanner.nextLine());
@@ -58,19 +57,6 @@ public class FileManager {
             }
             default -> throw new NoSuchDepartmentException("W pliku " + INPUT_FILE_NAME +
                     " znajduje się nieprawidłowa nazwa działu " + data);
-        }
-    }
-
-    private int countCsvLines() throws FileNotFoundException {
-        try (Scanner scanner = new Scanner(new File(INPUT_FILE_NAME))) {
-            int linesNumber = 0;
-
-            while (scanner.hasNextLine()) {
-                scanner.nextLine();
-                linesNumber++;
-            }
-
-            return linesNumber;
         }
     }
 }

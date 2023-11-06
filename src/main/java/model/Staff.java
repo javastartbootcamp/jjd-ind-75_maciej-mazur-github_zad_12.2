@@ -1,88 +1,80 @@
 package model;
 
-public class Staff {
-    private final Employee[] employees;
-    private int numberOfEmployees;
+import java.util.Arrays;
 
-    public Staff(int employeeNumber) {
-        employees = new Employee[employeeNumber];
-    }
+public class Staff {
+    private static final int INITIAL_EMPLOYEES_SIZE = 10;
+
+    private Employee[] employees = new Employee[INITIAL_EMPLOYEES_SIZE];
+    private int currentNumberOfEmployees;
+    private int numberOfItEmployees;
+    private int numberOfManagementEmployees;
+    private int numberOfSupportEmployees;
+    private double maxSalary;
+    private double minSalary;
+    private double totalSalary;
+    private boolean hasAtLeastOneSalaryAdded;
 
     public void addEmployee(Employee employee) {
-        employees[numberOfEmployees++] = employee;
+        if (currentNumberOfEmployees >= employees.length) {
+            extendEmployeesArray();
+        }
+        employees[currentNumberOfEmployees++] = employee;
+        updateStaffStatistics(employee);
+    }
+
+    private void updateStaffStatistics(Employee employee) {
+        if (!hasAtLeastOneSalaryAdded) {
+            minSalary = employee.getSalary();
+            hasAtLeastOneSalaryAdded = true;
+        } else {
+            minSalary = Math.min(employee.getSalary(), minSalary);
+        }
+
+        maxSalary = Math.max(employee.getSalary(), maxSalary);
+        totalSalary += employee.getSalary();
+
+        switch (employee.getDepartment()) {
+            case IT -> numberOfItEmployees++;
+            case MANAGEMENT -> numberOfManagementEmployees++;
+            case SUPPORT -> numberOfSupportEmployees++;
+            default -> { }
+        }
+    }
+
+    private void extendEmployeesArray() {
+        employees = Arrays.copyOf(employees, (employees.length + INITIAL_EMPLOYEES_SIZE));
+        System.out.println("Powiększenie tablicy");
     }
 
     public double getTotalSalary() {
-        double totalSalary = 0;
-
-        for (Employee employee : employees) {
-            totalSalary += employee.getSalary();
-        }
-
         return totalSalary;
     }
 
     public int getTotalNumberOfEmployees() {
-        return numberOfEmployees;
+        return currentNumberOfEmployees;
     }
 
     public double getMinSalary() {
-        double minSalary = Double.MAX_VALUE;
-
-        for (Employee employee : employees) {
-            if (employee.getSalary() < minSalary) {
-                minSalary = employee.getSalary();
-            }
-        }
-
         return minSalary;
     }
 
     public double getMaxSalary() {
-        double maxSalary = Double.MIN_VALUE;
-
-        for (Employee employee : employees) {
-            if (employee.getSalary() > maxSalary) {
-                maxSalary = employee.getSalary();
-            }
-        }
-
         return maxSalary;
     }
 
-    public int getNumberOfItEmployees() {
-        int number = 0;
-
-        for (Employee employee : employees) {
-            if (employee.getDepartment() == Department.IT) {
-                number++;
+    public int getNumberOfEmployeesByDepartment(Department department) {
+        switch (department) {
+            case IT -> {
+                return numberOfItEmployees;
             }
-        }
-
-        return number;
-    }
-
-    public int getNumberOfManagementEmployees() {
-        int number = 0;
-
-        for (Employee employee : employees) {
-            if (employee.getDepartment() == Department.MANAGEMENT) {
-                number++;
+            case MANAGEMENT -> {
+                return numberOfManagementEmployees;
             }
-        }
-
-        return number;
-    }
-
-    public int getNumberOfSupportEmployees() {
-        int number = 0;
-
-        for (Employee employee : employees) {
-            if (employee.getDepartment() == Department.SUPPORT) {
-                number++;
+            case SUPPORT -> {
+                return numberOfSupportEmployees;
             }
+            default -> throw new IllegalArgumentException();
         }
-
-        return number;
     }
 }
